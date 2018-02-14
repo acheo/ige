@@ -14,7 +14,7 @@ var IgeBox2dDebugPainter = IgeObject.extend({
 			ctx.rotate(45  * Math.PI / 180);
 		}
 		
-		this._entity.box2d._world.DrawDebugData();
+		//this._entity.box2d._world.DrawDebugData();
 
 		IgeObject.prototype.tick.call(this, ctx);
 	}

@@ -280,8 +280,8 @@ var IgeEntityBox2d = IgeEntity.extend({
 			// transform op and take over
 
 			// Translate the body
-			entBox2d.SetPosition({x: x / this._b2dRef._scaleRatio, y: y / this._b2dRef._scaleRatio});
-			entBox2d.SetAwake(true);
+			entBox2d.setPosition({x: x / this._b2dRef._scaleRatio, y: y / this._b2dRef._scaleRatio});
+			entBox2d.setAwake(true);
 		}
 
 		return this;

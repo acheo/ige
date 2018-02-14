@@ -16,24 +16,24 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 		this._options = options;
 		this._mode = 0;
 
-		this.b2Color = Box2D.Common.b2Color;
-		this.b2Vec2 = Box2D.Common.Math.b2Vec2;
-		this.b2Math = Box2D.Common.Math.b2Math;
-		this.b2Shape = Box2D.Collision.Shapes.b2Shape;
-		this.b2BodyDef = Box2D.Dynamics.b2BodyDef;
-		this.b2Body = Box2D.Dynamics.b2Body;
-		this.b2FixtureDef = Box2D.Dynamics.b2FixtureDef;
-		this.b2Fixture = Box2D.Dynamics.b2Fixture;
-		this.b2World = Box2D.Dynamics.b2World;
-		this.b2MassData = Box2D.Collision.Shapes.b2MassData;
-		this.b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
-		this.b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
-		this.b2DebugDraw = Box2D.Dynamics.b2DebugDraw;
-		this.b2ContactListener = Box2D.Dynamics.b2ContactListener;
-		this.b2Distance = Box2D.Collision.b2Distance;
-		this.b2Contact = Box2D.Dynamics.Contacts.b2Contact;
-		this.b2FilterData = Box2D.Dynamics.b2FilterData;
-		this.b2DistanceJointDef = Box2D.Dynamics.Joints.b2DistanceJointDef;
+		//this.b2Color = planck.Common.b2Color;
+		this.b2Vec2 = planck.Vec2;
+		this.b2Math = planck.Math;
+		this.b2Shape = planck.Shape;
+		//this.b2BodyDef = planck.Dynamics.b2BodyDef;
+		this.b2Body = planck.Body;
+		//this.b2FixtureDef = planck.Dynamics.b2FixtureDef;
+		this.b2Fixture = planck.Fixture;
+		this.b2World = planck.World;
+		//this.b2MassData = planck.Collision.Shapes.MassData;
+		this.b2PolygonShape = planck.Polygon;
+		this.b2CircleShape = planck.Circle;
+		//this.b2DebugDraw = planck.Dynamics.DebugDraw;
+		//this.b2ContactListener = planck.Dynamics.ContactListener;
+		//this.b2Distance = planck.Collision.Distance;
+		this.b2Contact = planck.Contact;
+		//this.b2FilterData = planck.Dynamics.FilterData;
+		//this.b2DistanceJointDef = planck.Dynamics.Joints.b2DistanceJointDef;
 
 		// Extend the b2Contact class to allow the IGE entity accessor
 		// and other helper methods
@@ -225,8 +225,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 	 * @return {b2FixtureDef}
 	 */
 	createFixture: function (params) {
-		var tempDef = new this.b2FixtureDef(),
-			param;
+		var tempDef = {};
 
 		for (param in params) {
 			if (params.hasOwnProperty(param)) {
@@ -247,7 +246,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 	 * @return {b2Body}
 	 */
 	createBody: function (entity, body) {
-		var tempDef = new this.b2BodyDef(),
+		var tempDef = {},
 			param,
 			tempBod,
 			fixtureDef,
@@ -260,19 +259,8 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 			finalWidth, finalHeight;
 
 		// Process body definition and create a box2d body for it
-		switch (body.type) {
-			case 'static':
-				tempDef.type = this.b2Body.b2_staticBody;
-				break;
+		tempDef.type = body.type;
 
-			case 'dynamic':
-				tempDef.type = this.b2Body.b2_dynamicBody;
-				break;
-			
-			case 'kinematic':
-                tempDef.type = this.b2Body.b2_kinematicBody;
-                break;
-		}
 
 		// Add the parameters of the body to the new body instance
 		for (param in body) {
@@ -297,7 +285,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 		tempDef.position = new this.b2Vec2(entity._translate.x / this._scaleRatio, entity._translate.y / this._scaleRatio);
 
 		// Create the new body
-		tempBod = this._world.CreateBody(tempDef);
+		tempBod = this._world.createBody(tempDef);
 
 		// Now apply any post-creation attributes we need to
 		for (param in body) {
@@ -332,16 +320,16 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 										case 'circle':
 											tempShape = new this.b2CircleShape();
 											if (fixtureDef.shape.data && typeof(fixtureDef.shape.data.radius) !== 'undefined') {
-												tempShape.SetRadius(fixtureDef.shape.data.radius / this._scaleRatio);
+												tempShape.m_radius = (fixtureDef.shape.data.radius / this._scaleRatio);
 											} else {
-												tempShape.SetRadius((entity._bounds2d.x / this._scaleRatio) / 2);
+												tempShape.m_radius = (entity._bounds2d.x / this._scaleRatio) / 2;
 											}
 											
 											if (fixtureDef.shape.data) {
 												finalX = fixtureDef.shape.data.x !== undefined ? fixtureDef.shape.data.x : 0;
 												finalY = fixtureDef.shape.data.y !== undefined ? fixtureDef.shape.data.y : 0;
 												
-												tempShape.SetLocalPosition(new this.b2Vec2(finalX / this._scaleRatio, finalY / this._scaleRatio));
+												tempShape.m_p = new this.b2Vec2(finalX / this._scaleRatio, finalY / this._scaleRatio);
 											}
 											break;
 	
@@ -366,7 +354,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 											}
 	
 											// Set the polygon as a box
-											tempShape.SetAsOrientedBox(
+											tempShape._setAsBox(
 												(finalWidth / this._scaleRatio),
 												(finalHeight / this._scaleRatio),
 												new this.b2Vec2(finalX / this._scaleRatio, finalY / this._scaleRatio),
@@ -377,7 +365,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 	
 									if (tempShape) {
 										tempFixture.shape = tempShape;
-										finalFixture = tempBod.CreateFixture(tempFixture);
+										finalFixture = tempBod.createFixture(tempFixture);
 										finalFixture.igeId = tempFixture.igeId;
 									}
 								}
@@ -393,7 +381,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 								}
 	
 								if (fixtureDef.density !== undefined && finalFixture) {
-									finalFixture.SetDensity(fixtureDef.density);
+									finalFixture.m_density = fixtureDef.density;
 								}
 							}
 						} else {
@@ -534,11 +522,13 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 	 * @param {IgeEntity} mountScene
 	 */
 	enableDebug: function (mountScene) {
+        
 		if (mountScene) {
 			// Define the debug drawing instance
-			var debugDraw = new this.b2DebugDraw();
+			//var debugDraw = new this.b2DebugDraw();
 			this._box2dDebug = true;
 
+            /*
 			debugDraw.SetSprite(ige._ctx);
 			debugDraw.SetDrawScale(this._scaleRatio);
 			debugDraw.SetFillAlpha(0.3);
@@ -554,6 +544,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 
 			// Set the debug draw for the world
 			this._world.SetDebugDraw(debugDraw);
+            */
 
 			// Create the debug painter entity and mount
 			// it to the passed scene
@@ -564,6 +555,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 		} else {
 			this.log('Cannot enable box2d debug drawing because the passed argument is not an object on the scenegraph.', 'error');
 		}
+        
 	},
 
 	/**
@@ -632,7 +624,7 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 			destroyBody;
 
 		if (self._active && self._world) {
-			if (!self._world.IsLocked()) {
+			if (!self._world.isLocked()) {
 				// Remove any bodies that were queued for removal
 				removeWhenReady = self._removeWhenReady;
 				count = removeWhenReady.length;
@@ -649,13 +641,13 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 
 			// Call the world step; frame-rate, velocity iterations, position iterations
 			if (self._mode === 0) {
-				self._world.Step(ige._tickDelta / 1000, 8, 3);
+				self._world.step(ige._tickDelta / 1000, 8, 3);
 			} else {
-				self._world.Step(1 / 60, 8, 3);
+				self._world.step(1 / 60, 8, 3);
 			}
 
 			// Loop the physics objects and move the entities they are assigned to
-			tempBod = self._world.GetBodyList();
+			tempBod = self._world.getBodyList();
 			while (tempBod) {
 				if (tempBod._entity) {
 					// Body has an entity assigned to it
@@ -663,11 +655,11 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 					entityBox2dBody = entity._box2dBody;
 
 					// Check if the body is awake and is dynamic (we don't transform static bodies)
-					if (tempBod.IsAwake() && tempBod.m_type !== 0) {
+					if (tempBod.isAwake() && tempBod.m_type !== 0) {
 						// Update the entity data to match the body data
 						entityBox2dBody.updating = true;
-						entity.translateTo(tempBod.m_xf.position.x * self._scaleRatio, tempBod.m_xf.position.y * self._scaleRatio, entity._translate.z);
-						entity.rotateTo(entity._rotate.x, entity._rotate.y, tempBod.GetAngle());
+						entity.translateTo(tempBod.m_xf.p.x * self._scaleRatio, tempBod.m_xf.p.y * self._scaleRatio, entity._translate.z);
+						entity.rotateTo(entity._rotate.x, entity._rotate.y, tempBod.getAngle());
 						entityBox2dBody.updating = false;
 
 						if (entityBox2dBody.asleep) {
@@ -684,11 +676,11 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 					}
 				}
 
-				tempBod = tempBod.GetNext();
+				tempBod = tempBod.getNext();
 			}
 
 			// Clear forces because we have ended our physics simulation frame
-			self._world.ClearForces();
+			self._world.clearForces();
 
 			tempBod = null;
 			entity = null;
