@@ -7,6 +7,13 @@ var Client = IgeClass.extend({
 		var self = this;
 		this.obj = [];
 
+		self.gameTexture = {
+			shapes: {
+				square: new IgeTexture('./assets/textures/smartTextures/square.js'),
+                circle: new IgeTexture('./assets/textures/smartTextures/circle.js')
+			}
+		};
+
 		// Create the HTML canvas
 		ige.createFrontBuffer(true);
 
@@ -52,6 +59,7 @@ var Client = IgeClass.extend({
 						}]
 					})
 					.id('ball1')
+                    .texture(self.gameTexture.shapes.circle)
 					.translateTo(4, -300, 0)
 					.drawBounds(true)
 					.mount(self.scene1);
@@ -75,6 +83,7 @@ var Client = IgeClass.extend({
 						}]
 					})
 					.id('ball2')
+                    .texture(self.gameTexture.shapes.circle)
 					.translateTo(0, -400, 0)
 					.drawBounds(true)
 					.mount(self.scene1);
@@ -98,6 +107,7 @@ var Client = IgeClass.extend({
 						}]
 					})
 					.id('square1')
+                    .texture(self.gameTexture.shapes.square)
 					.translateTo(-40, -470, 0)
 					.drawBounds(true)
 					.mount(self.scene1);
@@ -121,6 +131,7 @@ var Client = IgeClass.extend({
 						}]
 					})
 					.id('square2')
+                    .texture(self.gameTexture.shapes.square)
 					.translateTo(90, -560, 0)
 					.drawBounds(true)
 					.mount(self.scene1);
@@ -132,7 +143,7 @@ var Client = IgeClass.extend({
 					.width(880)
 					.height(20)
 					.drawBounds(true)
-					//.mount(self.scene1)
+					.mount(self.scene1)
 					.box2dBody({
 						type: 'static',
 						allowSleep: true,
