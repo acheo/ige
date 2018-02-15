@@ -459,7 +459,32 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 	 * @param {Function} postSolve
 	 */
 	contactListener: function (beginContactCallback, endContactCallback, preSolve, postSolve) {
-		var contactListener = new this.b2ContactListener();
+
+        if (beginContactCallback) {
+        this._world.on('begin-contact', function(contact, oldManifold) {
+            beginContactCallback(contact);
+        });
+        }
+
+        if (endContactCallback) {
+        this._world.on('end-contact', function(contact, oldManifold) {
+            endContactCallback(contact);
+        });
+        }
+
+        if (preSolve) {
+        this._world.on('pre-solve', function(contact, oldManifold) {
+            preSolve(contact);
+        });
+        }
+
+        if (postSolve) {
+        this._world.on('post-solve', function(contact, oldManifold) {
+            postSolve(contact);
+        });
+        }
+        
+        /*
 		if (beginContactCallback !== undefined) {
 			contactListener.BeginContact = beginContactCallback;
 		}
@@ -476,6 +501,8 @@ var IgeBox2dComponent = IgeEventingClass.extend({
 			contactListener.PostSolve = postSolve;
 		}
 		this._world.SetContactListener(contactListener);
+        */
+
 	},
 	
 	/**

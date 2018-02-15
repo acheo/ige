@@ -159,7 +159,7 @@ var Client = IgeClass.extend({
 						// For fun, lets allow ball1 and square2 to pass through each other
 						if (contact.igeEitherId('ball1') && contact.igeEitherId('square2')) {
 							// Cancel the contact
-							contact.SetEnabled(false);
+							contact.setEnabled(false);
 						}
 
 						// You can also check an entity by it's category using igeEitherCategory('categoryName')
